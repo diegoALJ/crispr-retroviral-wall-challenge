@@ -5,7 +5,7 @@ This repository contains my solution and experimentation workflow for the **Retr
 The central challenge is to build a model that **generalizes across evolutionary families**, rather than memorizing family identity. To address this, the competition uses **Leave-One-Family-Out (LOFO) cross-validation** and evaluates submissions with the **Cross-Lineage Score (CLS)** metric.
 
 **Competition link:** (https://www.kaggle.com/competitions/retroviral-challenge-predict/overview) 
-**Code submission page:** [Insert Mandrake Bio submission link here]
+
 
 ---
 
