@@ -1,0 +1,77 @@
+project:
+  name: "retroviral-wall-challenge"
+  type: "kaggle-bioinformatics"
+  task: "rt-activity-and-efficiency-prediction"
+  framework: "notebook-first"
+
+paths:
+  train_dir: "/kaggle/input/datasets/damontoyat/retroviral-train"
+  test_dir: "/kaggle/input/datasets/damontoyat/retroviral-test"
+  family_dir: "/kaggle/input/datasets/damontoyat/retroviral-family-splits"
+  feat_dict_dir: "/kaggle/input/datasets/damontoyat/retroviral-feature-dic"
+
+  train_filename: "train.csv"
+  test_filename: "test.csv"
+  family_filename: "family_splits.csv"
+  feat_dict_filename: "feature_dictionary.csv"
+
+  feature_sets_json_path: "/kaggle/working/feature_sets_for_modeling.json"
+  feature_master_csv_path: "/kaggle/working/feature_master_df.csv"
+  output_dir: "/kaggle/working"
+
+columns:
+  id_col: "rt_name"
+  sequence_col: "sequence"
+  family_col: "rt_family"
+  target_class_col: "active"
+  target_reg_col: "pe_efficiency_pct"
+
+validation:
+  cv_name: "LOFO"
+  use_lofo: true
+  group_col: "rt_family"
+
+feature_engineering:
+  ensemble_feature_sets:
+    - "foldseek"
+    - "foldseek_plus_catalytic"
+    - "foldseek_plus_mechanistic"
+  imputer_strategy: "median"
+  add_missing_indicators: false
+
+models:
+  classifier_name: "catboost"
+  regressor_name: "catboost"
+
+classifier:
+  iterations: 500
+  depth: 4
+  learning_rate: 0.03
+  l2_leaf_reg: 5.0
+  loss_function: "Logloss"
+  eval_metric: "AUC"
+  verbose: false
+
+regressor:
+  iterations: 500
+  depth: 4
+  learning_rate: 0.03
+  l2_leaf_reg: 5.0
+  loss_function: "RMSE"
+  train_mode: "all_rows"
+  use_log1p_target: true
+  clip_min: 0.0
+  clip_max: 41.0
+
+blending:
+  classifier_weight: 0.35
+  regressor_weight: 0.65
+
+submission:
+  id_col: "rt_name"
+  pred_col: "predicted_score"
+  filename: "submission_catboost_foldseek_ensemble.csv"
+
+general:
+  seed: 42
+  verbose: true
