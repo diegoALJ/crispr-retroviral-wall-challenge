@@ -165,3 +165,5 @@ This repository is an independent portfolio and competition project based on a p
 ## References
 
 Competition and dataset information are based on the official Kaggle challenge description and dataset documentation provided by the organizers.
+
+Mandrake Bio. Retroviral Wall Challenge. https://kaggle.com/competitions/retroviral-challenge-predict, 2026. Kaggle.
