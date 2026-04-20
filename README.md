@@ -13,16 +13,15 @@ The central challenge is to build a model that **generalizes across evolutionary
 
 Prime editing is one of the most precise genome editing technologies currently available. A reverse transcriptase (RT) fused to Cas9 nickase plays a key role in determining whether an edit succeeds, how efficiently it works, and in which cellular contexts it can be applied.
 
-Most current prime editors rely on **MMLV-derived RTs**, which are relatively large and difficult to deliver therapeutically. However, nature contains thousands of alternative RTs across retroviruses, bacteria, retrotransposons, and mobile genetic elements. This competition explores whether computational models can identify promising RT candidates before costly wet-lab screening. :contentReference[oaicite:1]{index=1}
-
-The task is to predict, from an RT protein sequence and computed biophysical features, a **continuous score** indicating how likely the RT is to be active and how efficient it may be for prime editing. :contentReference[oaicite:2]{index=2}
+Most current prime editors rely on **MMLV-derived RTs**, which are relatively large and difficult to deliver therapeutically. However, nature contains thousands of alternative RTs across retroviruses, bacteria, retrotransposons, and mobile genetic elements. This competition explores whether computational models can identify promising RT candidates before costly wet-lab screening. 
+The task is to predict, from an RT protein sequence and computed biophysical features, a **continuous score** indicating how likely the RT is to be active and how efficient it may be for prime editing. 
 
 ---
 
 
 ## Dataset
 
-The dataset contains **57 experimentally tested reverse transcriptases** evaluated for prime editing activity. Each RT includes sequence information, family metadata, handcrafted biophysical features, embeddings, and predicted structures. :contentReference[oaicite:8]{index=8}
+The dataset contains **57 experimentally tested reverse transcriptases** evaluated for prime editing activity. Each RT includes sequence information, family metadata, handcrafted biophysical features, embeddings, and predicted structures. 
 
 ### Main files
 
@@ -52,8 +51,7 @@ The dataset contains **57 experimentally tested reverse transcriptases** evaluat
   Family membership breakdown
 
 - **`structures.zip`**  
-  Predicted 3D structures in PDB format for all RTs :contentReference[oaicite:9]{index=9}
-
+  Predicted 3D structures in PDB format for all RTs 
 ---
 
 ## Modeling Goal
@@ -66,8 +64,7 @@ The objective is to produce a **continuous `predicted_score`** for each RT:
 This score is used both for:
 
 - **classification**, through **PR-AUC**
-- **ranking**, through **Weighted Spearman** :contentReference[oaicite:10]{index=10}
-
+- **ranking**, through **Weighted Spearman** 
 ---
 
 ## Evaluation Metric
@@ -75,13 +72,13 @@ This score is used both for:
 The competition uses **CLS (Cross-Lineage Score)**, defined as the harmonic mean of:
 
 - **PR-AUC**
-- **Weighted Spearman correlation** :contentReference[oaicite:11]{index=11}
+- **Weighted Spearman correlation** 
 
 This means a good solution must do both:
 1. separate active from inactive RTs
 2. rank the strongest RTs near the top
 
-A model that performs well on only one of these components will still obtain a weak CLS score. :contentReference[oaicite:12]{index=12}
+A model that performs well on only one of these components will still obtain a weak CLS score. 
 
 ---
 
@@ -93,7 +90,7 @@ This project follows the competition’s required **LOFO (Leave-One-Family-Out)*
 - train on the remaining families
 - predict on the held-out family
 - pool all out-of-fold predictions
-- compute CLS on the complete pooled prediction vector :contentReference[oaicite:13]{index=13}
+- compute CLS on the complete pooled prediction vector 
 
 This is critical because standard random folds would overestimate performance by allowing family-specific patterns to leak across train and validation sets.
 
