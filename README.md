@@ -54,6 +54,45 @@ The dataset contains **57 experimentally tested reverse transcriptases** evaluat
   Predicted 3D structures in PDB format for all RTs 
 ---
 
+
+## Modeling Approach
+
+This project explored two complementary modeling strategies for predicting reverse transcriptase (RT) performance in prime editing.
+
+1. 02_modeling_catboost.ipynb
+
+This notebook uses a tabular-only approach based on the engineered biophysical and structural features provided in the competition dataset. The model relies on CatBoost and focuses on descriptors such as FoldSeek similarity, catalytic/motif-related features, and other physicochemical variables derived from each RT.
+
+This approach does not use the raw amino acid sequence directly. Instead, it learns from the curated feature space available in the training data. The final prediction is generated from the tabular feature ensembles only.
+
+2. 03_modeling_catboost+ESM2.ipynb
+
+This notebook extends the tabular baseline with a portable sequence branch based on the RT amino acid sequence. In this approach, ESM-2 is used as a frozen pretrained protein language model to generate global sequence embeddings, which are then passed to a regularized downstream model (Ridge).
+
+The final prediction is obtained through a two-branch ensemble:
+
+Branch 1: CatBoost over tabular biophysical/structural features
+Branch 2: ESM-2 sequence embeddings + Ridge downstream model
+
+Both branches are combined through a weighted ensemble of their final scores:
+
+0.6 × tabular score
+0.4 × sequence-embedding score
+
+Although this second approach achieved a lower public leaderboard score, it is expected to be more robust for generalization to unseen RTs, since it incorporates both handcrafted structural descriptors and information directly derived from the amino acid sequence.
+
+
+## Key Results
+
+Best public leaderboard score (tabular CatBoost): 0.922
+Public leaderboard score (CatBoost + ESM-2 ensemble): 0.84
+Tabular baseline notebook: 02_modeling_catboost.ipynb
+Hybrid tabular + sequence notebook: 03_modeling_catboost+ESM2.ipynb
+
+The tabular CatBoost model achieved the best score on the current public leaderboard, showing that the engineered structural and biophysical features contain strong predictive signal.
+
+The hybrid CatBoost + ESM-2 approach scored lower on the current test set, but it is considered a promising alternative for better generalization to new RTs, because it explicitly incorporates the amino acid sequence through a pretrained protein language model instead of depending only on the provided tabular descriptors.
+
 ## Modeling Goal
 
 The objective is to produce a **continuous `predicted_score`** for each RT:
