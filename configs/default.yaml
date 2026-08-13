@@ -1,0 +1,140 @@
+# ============================================================
+# Retroviral Wall Challenge - Default Configuration
+# ============================================================
+
+project:
+  name: "retroviral-wall-challenge"
+  seed: 42
+  output_dir: "results"
+
+
+# ============================================================
+# Data
+# ============================================================
+
+data:
+  train_path: "data/train.csv"
+  test_path: "data/test.csv"
+  family_splits_path: "data/family_splits.csv"
+  feature_dictionary_path: "data/feature_dictionary.csv"
+
+  id_column: "rt_name"
+  sequence_column: "sequence"
+  family_column: "rt_family"
+
+  classification_target: "active"
+  regression_target: "pe_efficiency_pct"
+
+
+# ============================================================
+# Validation
+# ============================================================
+
+validation:
+  strategy: "LOFO"
+  group_column: "rt_family"
+
+
+# ============================================================
+# Branch A - Tabular Model
+# ============================================================
+
+tabular:
+  enabled: true
+  model: "catboost"
+
+  feature_sets:
+    - "foldseek"
+    - "foldseek_plus_catalytic"
+    - "foldseek_plus_mechanistic"
+
+  classifier:
+    iterations: 500
+    depth: 4
+    learning_rate: 0.03
+    l2_leaf_reg: 5.0
+    loss_function: "Logloss"
+    eval_metric: "AUC"
+
+  regressor:
+    iterations: 500
+    depth: 4
+    learning_rate: 0.03
+    l2_leaf_reg: 5.0
+    loss_function: "RMSE"
+
+  regression:
+    train_mode: "all_rows"
+    log1p_target: true
+    clip_min: 0.0
+    clip_max: 41.0
+
+  score_blend:
+    classification_weight: 0.35
+    regression_weight: 0.65
+
+
+# ============================================================
+# Branch B - Sequence Model
+# ============================================================
+
+sequence:
+  enabled: true
+
+  backbone:
+    model_name: "facebook/esm2_t33_650M_UR50D"
+    frozen: true
+    pooling: "mean"
+    max_length: 1024
+    batch_size: 1
+    use_fp16: false
+
+  embedding:
+    dimension: 1280
+    cache_dir: "cache/sequence_embeddings"
+
+  dimensionality_reduction:
+    method: "pca"
+    n_components: 32
+
+  classifier:
+    model: "logistic_regression"
+    C: 0.5
+    max_iter: 3000
+    class_weight: "balanced"
+
+  regressor:
+    model: "ridge"
+    alpha: 3.0
+
+  regression:
+    log1p_target: true
+    clip_min: 0.0
+    clip_max: 41.0
+
+  score_blend:
+    classification_weight: 0.35
+    regression_weight: 0.65
+
+
+# ============================================================
+# Multimodal Ensemble
+# ============================================================
+
+ensemble:
+  enabled: true
+
+  tabular_weight: 0.60
+  sequence_weight: 0.40
+
+  final_score_column: "predicted_score"
+
+
+# ============================================================
+# Submission
+# ============================================================
+
+submission:
+  id_column: "rt_name"
+  prediction_column: "predicted_score"
+  filename: "submission.csv"
