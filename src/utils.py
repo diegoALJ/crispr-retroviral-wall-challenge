@@ -1,0 +1,46 @@
+from __future__ import annotations
+
+import json
+import os
+import random
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import torch
+
+
+def seed_everything(seed: int = 42) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    torch.manual_seed(seed)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
+
+def ensure_dir(path: str | Path) -> Path:
+    path = Path(path)
+    path.mkdir(parents=True, exist_ok=True)
+
+    return path
+
+
+def save_json(
+    obj: Any,
+    path: str | Path,
+) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(
+            obj,
+            f,
+            indent=2,
+            default=str,
+        )
